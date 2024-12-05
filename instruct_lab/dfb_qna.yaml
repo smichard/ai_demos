@@ -1,0 +1,131 @@
+version: 3
+domain: trivia
+created_by: stephanmichard
+seed_examples:
+  - context: |
+      On December 3, 2024, Arminia Bielefeld faced SC Freiburg in the DFB Pokal, with Arminia Bielefeld defeating SC Freiburg 3-1.
+    questions_and_answers:
+      - question: |
+          What was the outcome of the Arminia Bielefeld vs. SC Freiburg match?
+        answer: |
+          Arminia Bielefeld defeated SC Freiburg 3-1 on December 3, 2024.
+      - question: |
+          Who won the DFB Pokal match between Arminia Bielefeld and SC Freiburg?
+        answer: |
+          Arminia Bielefeld won against SC Freiburg with a 3-1 victory.
+      - question: |
+          What was the final score when Arminia Bielefeld played SC Freiburg?
+        answer: |
+          The final score was 3-1 in favor of Arminia Bielefeld.
+  - context: |
+      VfB Stuttgart played against Jahn Regensburg on December 3, 2024, in the DFB Pokal, winning convincingly with a score of 3-0.
+    questions_and_answers:
+      - question: |
+          How did VfB Stuttgart perform against Jahn Regensburg?
+        answer: |
+          VfB Stuttgart won convincingly with a score of 3-0.
+      - question: |
+          What was the final score of the VfB Stuttgart vs. Jahn Regensburg match?
+        answer: |
+          VfB Stuttgart defeated Jahn Regensburg 3-0.
+      - question: |
+          Which team secured a 3-0 victory in the DFB Pokal?
+        answer: |
+          VfB Stuttgart secured a 3-0 victory over Jahn Regensburg.
+  - context: |
+      On December 3, 2024, Bayern München faced Bayer 04 Leverkusen in the DFB Pokal, with Bayer Leverkusen securing a 1-0 victory over Bayern München.
+    questions_and_answers:
+      - question: |
+          Who won the match between Bayern München and Bayer 04 Leverkusen?
+        answer: |
+          Bayer 04 Leverkusen secured a 1-0 victory over Bayern München.
+      - question: |
+          What was the final score of the Bayern München vs. Bayer 04 Leverkusen match?
+        answer: |
+          Bayer Leverkusen defeated Bayern München 1-0.
+      - question: |
+          Which team defeated Bayern München in the DFB Pokal match?
+        answer: |
+          Bayer 04 Leverkusen defeated Bayern München with a 1-0 victory.
+  - context: |
+      On December 3, 2024, Werder Bremen narrowly defeated SV Darmstadt 98 with a score of 1-0 in the DFB Pokal.
+    questions_and_answers:
+      - question: |
+          Who won the Werder Bremen vs. SV Darmstadt 98 match?
+        answer: |
+          Werder Bremen narrowly defeated SV Darmstadt 98 with a score of 1-0.
+      - question: |
+          What was the final score of the match between Werder Bremen and SV Darmstadt 98?
+        answer: |
+          Werder Bremen won 1-0 against SV Darmstadt 98.
+      - question: |
+          Which team advanced in the DFB Pokal after the match?
+        answer: |
+          Werder Bremen advanced after defeating SV Darmstadt 98 with a 1-0 victory.
+  - context: |
+      On December 4, 2024, 1. FC Köln emerged victorious with a 2-1 win against Hertha BSC in their DFB Pokal match.
+    questions_and_answers:
+      - question: |
+          What was the final score in the 1. FC Köln vs. Hertha BSC match?
+        answer: |
+          1. FC Köln won 2-1 against Hertha BSC.
+      - question: |
+          Who won the DFB Pokal match between 1. FC Köln and Hertha BSC?
+        answer: |
+          1. FC Köln emerged victorious with a 2-1 win.
+      - question: |
+          Which team did 1. FC Köln defeat in the DFB Pokal?
+        answer: |
+          1. FC Köln defeated Hertha BSC with a 2-1 victory.
+  - context: |
+      On December 4, 2024, VfL Wolfsburg triumphed with a 3-0 victory over TSG Hoffenheim in the DFB Pokal.
+    questions_and_answers:
+      - question: |
+          How did VfL Wolfsburg perform against TSG Hoffenheim?
+        answer: |
+          VfL Wolfsburg triumphed with a 3-0 victory.
+      - question: |
+          What was the final score of the VfL Wolfsburg vs. TSG Hoffenheim match?
+        answer: |
+          VfL Wolfsburg won 3-0 against TSG Hoffenheim.
+      - question: |
+          Who won the match between VfL Wolfsburg and TSG Hoffenheim?
+        answer: |
+          VfL Wolfsburg defeated TSG Hoffenheim 3-0.
+  - context: |
+      RB Leipzig defeated Eintracht Frankfurt with a commanding 3-0 victory on December 4, 2024, in the DFB Pokal.
+    questions_and_answers:
+      - question: |
+          What was the final score in the RB Leipzig vs. Eintracht Frankfurt match?
+        answer: |
+          RB Leipzig defeated Eintracht Frankfurt 3-0.
+      - question: |
+          Who won the DFB Pokal match between RB Leipzig and Eintracht Frankfurt?
+        answer: |
+          RB Leipzig won the match with a 3-0 victory.
+      - question: |
+          How did RB Leipzig perform against Eintracht Frankfurt?
+        answer: |
+          RB Leipzig secured a commanding 3-0 victory.
+  - context: |
+      On December 4, 2024, Karlsruher SC faced FC Augsburg in the DFB Pokal, with FC Augsburg winning a high-scoring match 5-4.
+    questions_and_answers:
+      - question: |
+          What was the final score of the Karlsruher SC vs. FC Augsburg match?
+        answer: |
+          FC Augsburg defeated Karlsruher SC 5-4.
+      - question: |
+          Who won the high-scoring match between Karlsruher SC and FC Augsburg?
+        answer: |
+          FC Augsburg won the match 5-4 against Karlsruher SC.
+      - question: |
+          Which team advanced in the DFB Pokal after the match?
+        answer: |
+          FC Augsburg advanced after defeating Karlsruher SC 5-4.
+document_outline: |
+  Information about the DFB Pokal match results from December 3 and 4, 2024, including match outcomes and scores.
+document:
+  repo: https://github.com/stephanmichard/sports_trivia_knowledge
+  commit: z9y8x7w6v5u4t3s2r1q0
+  patterns:
+    - instructlab/dfb_qna.yaml
