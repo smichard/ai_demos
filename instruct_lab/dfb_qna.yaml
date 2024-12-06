@@ -126,6 +126,6 @@ document_outline: |
   Information about the DFB Pokal match results from December 3 and 4, 2024, including match outcomes and scores.
 document:
   repo: https://github.com/smichard/ai_demos
-  commit: 1aa97fa
+  commit: b8ad5a0
   patterns:
     - instructlab/dfb_qna.yaml
