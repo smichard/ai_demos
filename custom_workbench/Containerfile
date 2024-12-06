@@ -1,0 +1,8 @@
+FROM quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
+
+COPY requirements.txt ./ 
+
+RUN echo "Installing softwares and packages" && \ 
+    pip install micropipenv && \
+    micropipenv install && \
+    rm -f ./requirements.txt
