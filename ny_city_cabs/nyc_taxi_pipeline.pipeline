@@ -1,0 +1,430 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "c8e6f3b7-3f4a-4d8b-9e5c-1a2b3c4d5e6f",
+  "primary_pipeline": "primary",
+  "pipelines": [
+    {
+      "id": "primary",
+      "nodes": [
+        {
+          "id": "fetch-data",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "label": "Fetch from S3",
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [
+                "raw/raw.csv",
+                "raw/manifest.json"
+              ],
+              "env_vars": [
+                {
+                  "env_var": "AWS_ACCESS_KEY_ID",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_SECRET_ACCESS_KEY",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_DEFAULT_REGION",
+                  "value": "us-east-1"
+                },
+                {
+                  "env_var": "AWS_S3_ENDPOINT",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_S3_BUCKET",
+                  "value": ""
+                },
+                {
+                  "env_var": "TAXI_RAW_PREFIX",
+                  "value": "raw_data/"
+                }
+              ],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "1_fetch_from_s3.ipynb",
+              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+            },
+            "ui_data": {
+              "label": "Fetch from S3",
+              "image": "/static/elyra/notebook.svg",
+              "x_pos": 100,
+              "y_pos": 200,
+              "description": "Download NYC taxi data from S3"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "etl-transform",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "label": "ETL Transform",
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [
+                "processed/trips_clean.csv",
+                "processed/aggregates_by_hour.csv",
+                "processed/data_quality_report.json"
+              ],
+              "env_vars": [
+                {
+                  "env_var": "TAXI_RAW_IN",
+                  "value": "raw/raw.csv"
+                },
+                {
+                  "env_var": "TAXI_PROCESSED_DIR",
+                  "value": "processed"
+                },
+                {
+                  "env_var": "TAXI_MIN_DURATION_MIN",
+                  "value": "1.0"
+                },
+                {
+                  "env_var": "TAXI_MAX_DURATION_MIN",
+                  "value": "180.0"
+                },
+                {
+                  "env_var": "TAXI_MIN_DISTANCE_MI",
+                  "value": "0.1"
+                },
+                {
+                  "env_var": "TAXI_MAX_DISTANCE_MI",
+                  "value": "50.0"
+                },
+                {
+                  "env_var": "TAXI_MIN_TOTAL_AMOUNT",
+                  "value": "2.0"
+                },
+                {
+                  "env_var": "TAXI_MAX_TOTAL_AMOUNT",
+                  "value": "500.0"
+                },
+                {
+                  "env_var": "TAXI_MAX_PASSENGERS",
+                  "value": "8"
+                }
+              ],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "2_etl_transform.ipynb",
+              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+            },
+            "ui_data": {
+              "label": "ETL Transform",
+              "image": "/static/elyra/notebook.svg",
+              "x_pos": 350,
+              "y_pos": 200,
+              "description": "Clean, filter, and transform taxi data"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              },
+              "links": [
+                {
+                  "id": "link-fetch-to-etl",
+                  "node_id_ref": "fetch-data",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "analyze-plot",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "label": "Analyze and Plot",
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [
+                "plots/*.png",
+                "metrics/metrics.json"
+              ],
+              "env_vars": [
+                {
+                  "env_var": "TAXI_PROCESSED_DIR",
+                  "value": "processed"
+                },
+                {
+                  "env_var": "TAXI_PLOTS_DIR",
+                  "value": "plots"
+                },
+                {
+                  "env_var": "TAXI_METRICS_DIR",
+                  "value": "metrics"
+                },
+                {
+                  "env_var": "TAXI_PLOT_MAX_DISTANCE",
+                  "value": "15.0"
+                },
+                {
+                  "env_var": "TAXI_PLOT_MAX_DURATION",
+                  "value": "60.0"
+                },
+                {
+                  "env_var": "TAXI_PLOT_MAX_COST_PER_MILE",
+                  "value": "20.0"
+                },
+                {
+                  "env_var": "TAXI_PLOT_MAX_FARE",
+                  "value": "100.0"
+                },
+                {
+                  "env_var": "TAXI_PLOT_MAX_TIP",
+                  "value": "20.0"
+                }
+              ],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "3_analyze_and_plot.ipynb",
+              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+            },
+            "ui_data": {
+              "label": "Analyze and Plot",
+              "image": "/static/elyra/notebook.svg",
+              "x_pos": 600,
+              "y_pos": 200,
+              "description": "Generate metrics and visualizations"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              },
+              "links": [
+                {
+                  "id": "link-etl-to-analyze",
+                  "node_id_ref": "etl-transform",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "upload-results",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "label": "Upload Results",
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [],
+              "env_vars": [
+                {
+                  "env_var": "AWS_ACCESS_KEY_ID",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_SECRET_ACCESS_KEY",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_DEFAULT_REGION",
+                  "value": "us-east-1"
+                },
+                {
+                  "env_var": "AWS_S3_ENDPOINT",
+                  "value": ""
+                },
+                {
+                  "env_var": "AWS_S3_BUCKET",
+                  "value": ""
+                },
+                {
+                  "env_var": "TAXI_RUN_PREFIX",
+                  "value": "results/nyc-taxi-etl"
+                },
+                {
+                  "env_var": "TAXI_APPEND_ELYRA_RUN",
+                  "value": "true"
+                }
+              ],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "4_upload_results.ipynb",
+              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+            },
+            "ui_data": {
+              "label": "Upload Results",
+              "image": "/static/elyra/notebook.svg",
+              "x_pos": 850,
+              "y_pos": 200,
+              "description": "Upload processed results to S3"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              },
+              "links": [
+                {
+                  "id": "link-analyze-to-upload",
+                  "node_id_ref": "analyze-plot",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": ""
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": [
+            {
+              "id": "pipeline-description",
+              "x_pos": 100,
+              "y_pos": 50,
+              "width": 600,
+              "height": 80,
+              "content": "**NYC Taxi Data ETL Pipeline**\n\nThis pipeline fetches, transforms, analyzes, and uploads NYC taxi trip data.",
+              "associated_id_refs": []
+            }
+          ]
+        },
+        "version": 8,
+        "runtime_type": "KUBEFLOW_PIPELINES",
+        "properties": {
+          "name": "nyc_taxi_pipeline",
+          "runtime": "Data Science Pipelines",
+          "pipeline_defaults": {
+            "kubernetes_tolerations": [],
+            "kubernetes_pod_annotations": [],
+            "kubernetes_pod_labels": [],
+            "kubernetes_shared_mem_size": {},
+            "mounted_volumes": [],
+            "kubernetes_secrets": [],
+            "env_vars": [],
+            "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+          }
+        }
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}

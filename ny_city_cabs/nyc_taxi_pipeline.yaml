@@ -1,0 +1,311 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: nyc-taxi-data-etl-pipeline-
+  annotations:
+    pipelines.kubeflow.org/kfp_sdk_version: 2.0.0
+    pipelines.kubeflow.org/pipeline_compilation_time: '2026-03-05T00:00:00'
+    pipelines.kubeflow.org/pipeline_spec: |
+      {
+        "description": "End-to-end pipeline for processing NYC taxi trip data: fetch, transform, analyze, and upload results.",
+        "name": "NYC Taxi Data ETL Pipeline"
+      }
+  labels:
+    pipelines.kubeflow.org/kfp_sdk_version: 2.0.0
+spec:
+  entrypoint: nyc-taxi-data-etl-pipeline
+  arguments:
+    parameters:
+    - name: aws-access-key-id
+      value: ''
+    - name: aws-secret-access-key
+      value: ''
+    - name: aws-region
+      value: 'us-east-1'
+    - name: aws-s3-endpoint
+      value: ''
+    - name: s3-bucket
+      value: ''
+    - name: raw-prefix
+      value: 'raw_data/'
+    - name: input-key
+      value: ''
+    - name: run-prefix
+      value: 'results/nyc-taxi-etl'
+    - name: min-duration
+      value: '1.0'
+    - name: max-duration
+      value: '180.0'
+    - name: min-distance
+      value: '0.1'
+    - name: max-distance
+      value: '50.0'
+    - name: min-total
+      value: '2.0'
+    - name: max-total
+      value: '500.0'
+    - name: max-passengers
+      value: '8'
+    - name: max-plot-distance
+      value: '15.0'
+    - name: max-plot-duration
+      value: '60.0'
+    - name: max-cost-per-mile
+      value: '20.0'
+    - name: max-fare
+      value: '100.0'
+    - name: max-tip
+      value: '20.0'
+
+  volumeClaimTemplates:
+  - metadata:
+      name: pipeline-workspace
+    spec:
+      accessModes: [ReadWriteMany]
+      resources:
+        requests:
+          storage: 10Gi
+
+  templates:
+  - name: nyc-taxi-data-etl-pipeline
+    dag:
+      tasks:
+      - name: fetch-from-s3
+        template: fetch-from-s3-task
+        arguments:
+          parameters:
+          - name: aws-access-key-id
+            value: '{{workflow.parameters.aws-access-key-id}}'
+          - name: aws-secret-access-key
+            value: '{{workflow.parameters.aws-secret-access-key}}'
+          - name: aws-region
+            value: '{{workflow.parameters.aws-region}}'
+          - name: aws-s3-endpoint
+            value: '{{workflow.parameters.aws-s3-endpoint}}'
+          - name: s3-bucket
+            value: '{{workflow.parameters.s3-bucket}}'
+          - name: raw-prefix
+            value: '{{workflow.parameters.raw-prefix}}'
+          - name: input-key
+            value: '{{workflow.parameters.input-key}}'
+
+      - name: etl-transform
+        template: etl-transform-task
+        dependencies: [fetch-from-s3]
+        arguments:
+          parameters:
+          - name: min-duration
+            value: '{{workflow.parameters.min-duration}}'
+          - name: max-duration
+            value: '{{workflow.parameters.max-duration}}'
+          - name: min-distance
+            value: '{{workflow.parameters.min-distance}}'
+          - name: max-distance
+            value: '{{workflow.parameters.max-distance}}'
+          - name: min-total
+            value: '{{workflow.parameters.min-total}}'
+          - name: max-total
+            value: '{{workflow.parameters.max-total}}'
+          - name: max-passengers
+            value: '{{workflow.parameters.max-passengers}}'
+
+      - name: analyze-and-plot
+        template: analyze-and-plot-task
+        dependencies: [etl-transform]
+        arguments:
+          parameters:
+          - name: max-plot-distance
+            value: '{{workflow.parameters.max-plot-distance}}'
+          - name: max-plot-duration
+            value: '{{workflow.parameters.max-plot-duration}}'
+          - name: max-cost-per-mile
+            value: '{{workflow.parameters.max-cost-per-mile}}'
+          - name: max-fare
+            value: '{{workflow.parameters.max-fare}}'
+          - name: max-tip
+            value: '{{workflow.parameters.max-tip}}'
+
+      - name: upload-results
+        template: upload-results-task
+        dependencies: [analyze-and-plot]
+        arguments:
+          parameters:
+          - name: aws-access-key-id
+            value: '{{workflow.parameters.aws-access-key-id}}'
+          - name: aws-secret-access-key
+            value: '{{workflow.parameters.aws-secret-access-key}}'
+          - name: aws-region
+            value: '{{workflow.parameters.aws-region}}'
+          - name: aws-s3-endpoint
+            value: '{{workflow.parameters.aws-s3-endpoint}}'
+          - name: s3-bucket
+            value: '{{workflow.parameters.s3-bucket}}'
+          - name: run-prefix
+            value: '{{workflow.parameters.run-prefix}}'
+
+  # Task 1: Fetch from S3
+  - name: fetch-from-s3-task
+    inputs:
+      parameters:
+      - name: aws-access-key-id
+      - name: aws-secret-access-key
+      - name: aws-region
+      - name: aws-s3-endpoint
+      - name: s3-bucket
+      - name: raw-prefix
+      - name: input-key
+    container:
+      image: quay.io/elyra/elyra:3.15.0-py3.10
+      command: [papermill]
+      args:
+      - /workspace/1_fetch_from_s3.ipynb
+      - /workspace/output/1_fetch_from_s3_output.ipynb
+      env:
+      - name: AWS_ACCESS_KEY_ID
+        value: '{{inputs.parameters.aws-access-key-id}}'
+      - name: AWS_SECRET_ACCESS_KEY
+        value: '{{inputs.parameters.aws-secret-access-key}}'
+      - name: AWS_DEFAULT_REGION
+        value: '{{inputs.parameters.aws-region}}'
+      - name: AWS_S3_ENDPOINT
+        value: '{{inputs.parameters.aws-s3-endpoint}}'
+      - name: AWS_S3_BUCKET
+        value: '{{inputs.parameters.s3-bucket}}'
+      - name: TAXI_RAW_PREFIX
+        value: '{{inputs.parameters.raw-prefix}}'
+      - name: TAXI_INPUT_KEY
+        value: '{{inputs.parameters.input-key}}'
+      workingDir: /workspace
+      volumeMounts:
+      - name: pipeline-workspace
+        mountPath: /workspace
+    metadata:
+      labels:
+        pipelines.kubeflow.org/task_display_name: 'Fetch from S3'
+        pipelines.kubeflow.org/component_description: 'Download NYC taxi data from S3'
+
+  # Task 2: ETL Transform
+  - name: etl-transform-task
+    inputs:
+      parameters:
+      - name: min-duration
+      - name: max-duration
+      - name: min-distance
+      - name: max-distance
+      - name: min-total
+      - name: max-total
+      - name: max-passengers
+    container:
+      image: quay.io/elyra/elyra:3.15.0-py3.10
+      command: [papermill]
+      args:
+      - /workspace/2_etl_transform.ipynb
+      - /workspace/output/2_etl_transform_output.ipynb
+      env:
+      - name: TAXI_RAW_IN
+        value: 'raw/raw.csv'
+      - name: TAXI_PROCESSED_DIR
+        value: 'processed'
+      - name: TAXI_MIN_DURATION_MIN
+        value: '{{inputs.parameters.min-duration}}'
+      - name: TAXI_MAX_DURATION_MIN
+        value: '{{inputs.parameters.max-duration}}'
+      - name: TAXI_MIN_DISTANCE_MI
+        value: '{{inputs.parameters.min-distance}}'
+      - name: TAXI_MAX_DISTANCE_MI
+        value: '{{inputs.parameters.max-distance}}'
+      - name: TAXI_MIN_TOTAL_AMOUNT
+        value: '{{inputs.parameters.min-total}}'
+      - name: TAXI_MAX_TOTAL_AMOUNT
+        value: '{{inputs.parameters.max-total}}'
+      - name: TAXI_MAX_PASSENGERS
+        value: '{{inputs.parameters.max-passengers}}'
+      workingDir: /workspace
+      volumeMounts:
+      - name: pipeline-workspace
+        mountPath: /workspace
+    metadata:
+      labels:
+        pipelines.kubeflow.org/task_display_name: 'ETL Transform'
+        pipelines.kubeflow.org/component_description: 'Clean, filter, and transform taxi data'
+
+  # Task 3: Analyze and Plot
+  - name: analyze-and-plot-task
+    inputs:
+      parameters:
+      - name: max-plot-distance
+      - name: max-plot-duration
+      - name: max-cost-per-mile
+      - name: max-fare
+      - name: max-tip
+    container:
+      image: quay.io/elyra/elyra:3.15.0-py3.10
+      command: [papermill]
+      args:
+      - /workspace/3_analyze_and_plot.ipynb
+      - /workspace/output/3_analyze_and_plot_output.ipynb
+      env:
+      - name: TAXI_PROCESSED_DIR
+        value: 'processed'
+      - name: TAXI_PLOTS_DIR
+        value: 'plots'
+      - name: TAXI_METRICS_DIR
+        value: 'metrics'
+      - name: TAXI_PLOT_MAX_DISTANCE
+        value: '{{inputs.parameters.max-plot-distance}}'
+      - name: TAXI_PLOT_MAX_DURATION
+        value: '{{inputs.parameters.max-plot-duration}}'
+      - name: TAXI_PLOT_MAX_COST_PER_MILE
+        value: '{{inputs.parameters.max-cost-per-mile}}'
+      - name: TAXI_PLOT_MAX_FARE
+        value: '{{inputs.parameters.max-fare}}'
+      - name: TAXI_PLOT_MAX_TIP
+        value: '{{inputs.parameters.max-tip}}'
+      workingDir: /workspace
+      volumeMounts:
+      - name: pipeline-workspace
+        mountPath: /workspace
+    metadata:
+      labels:
+        pipelines.kubeflow.org/task_display_name: 'Analyze and Plot'
+        pipelines.kubeflow.org/component_description: 'Generate metrics and visualizations'
+
+  # Task 4: Upload Results
+  - name: upload-results-task
+    inputs:
+      parameters:
+      - name: aws-access-key-id
+      - name: aws-secret-access-key
+      - name: aws-region
+      - name: aws-s3-endpoint
+      - name: s3-bucket
+      - name: run-prefix
+    container:
+      image: quay.io/elyra/elyra:3.15.0-py3.10
+      command: [papermill]
+      args:
+      - /workspace/4_upload_results.ipynb
+      - /workspace/output/4_upload_results_output.ipynb
+      env:
+      - name: AWS_ACCESS_KEY_ID
+        value: '{{inputs.parameters.aws-access-key-id}}'
+      - name: AWS_SECRET_ACCESS_KEY
+        value: '{{inputs.parameters.aws-secret-access-key}}'
+      - name: AWS_DEFAULT_REGION
+        value: '{{inputs.parameters.aws-region}}'
+      - name: AWS_S3_ENDPOINT
+        value: '{{inputs.parameters.aws-s3-endpoint}}'
+      - name: AWS_S3_BUCKET
+        value: '{{inputs.parameters.s3-bucket}}'
+      - name: TAXI_RUN_PREFIX
+        value: '{{inputs.parameters.run-prefix}}'
+      - name: TAXI_APPEND_ELYRA_RUN
+        value: 'true'
+      workingDir: /workspace
+      volumeMounts:
+      - name: pipeline-workspace
+        mountPath: /workspace
+    metadata:
+      labels:
+        pipelines.kubeflow.org/task_display_name: 'Upload Results'
+        pipelines.kubeflow.org/component_description: 'Upload processed results to S3'
