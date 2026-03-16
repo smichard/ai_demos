@@ -292,7 +292,7 @@ s3://bucket/results/nyc-taxi-etl/run_2026-03-05_14-30/
 If you need additional dependencies, create a custom Docker image:
 
 ```dockerfile
-FROM quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
+FROM quay.io/rh-aiservices-bu/rhoai-lab-insurance-claim-confidence-pipeline:2.0
 
 # Install additional packages
 RUN pip install --no-cache-dir \
