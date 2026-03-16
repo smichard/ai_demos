@@ -155,7 +155,7 @@ spec:
       - name: raw-prefix
       - name: input-key
     container:
-      image: quay.io/elyra/elyra:3.15.0-py3.10
+      image: quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
       command: [papermill]
       args:
       - /workspace/1_fetch_from_s3.ipynb
@@ -196,7 +196,7 @@ spec:
       - name: max-total
       - name: max-passengers
     container:
-      image: quay.io/elyra/elyra:3.15.0-py3.10
+      image: quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
       command: [papermill]
       args:
       - /workspace/2_etl_transform.ipynb
@@ -239,7 +239,7 @@ spec:
       - name: max-fare
       - name: max-tip
     container:
-      image: quay.io/elyra/elyra:3.15.0-py3.10
+      image: quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
       command: [papermill]
       args:
       - /workspace/3_analyze_and_plot.ipynb
@@ -281,7 +281,7 @@ spec:
       - name: s3-bucket
       - name: run-prefix
     container:
-      image: quay.io/elyra/elyra:3.15.0-py3.10
+      image: quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest
       command: [papermill]
       args:
       - /workspace/4_upload_results.ipynb

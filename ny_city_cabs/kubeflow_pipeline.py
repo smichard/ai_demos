@@ -30,7 +30,7 @@ def fetch_from_s3_op(
     """Fetch NYC taxi data from S3."""
     return dsl.ContainerOp(
         name="Fetch from S3",
-        image="quay.io/elyra/elyra:3.15.0-py3.10",
+        image="quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest",
         command=["papermill"],
         arguments=[
             "1_fetch_from_s3.ipynb",
@@ -62,7 +62,7 @@ def etl_transform_op(
     """Transform and clean NYC taxi data."""
     return dsl.ContainerOp(
         name="ETL Transform",
-        image="quay.io/elyra/elyra:3.15.0-py3.10",
+        image="quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest",
         command=["papermill"],
         arguments=[
             "2_etl_transform.ipynb",
@@ -95,7 +95,7 @@ def analyze_and_plot_op(
     """Analyze data and generate visualizations."""
     return dsl.ContainerOp(
         name="Analyze and Plot",
-        image="quay.io/elyra/elyra:3.15.0-py3.10",
+        image="quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest",
         command=["papermill"],
         arguments=[
             "3_analyze_and_plot.ipynb",
@@ -127,7 +127,7 @@ def upload_results_op(
     """Upload results to S3."""
     return dsl.ContainerOp(
         name="Upload Results",
-        image="quay.io/elyra/elyra:3.15.0-py3.10",
+        image="quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest",
         command=["papermill"],
         arguments=[
             "4_upload_results.ipynb",

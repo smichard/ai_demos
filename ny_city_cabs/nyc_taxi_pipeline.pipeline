@@ -54,7 +54,7 @@
               "kubernetes_tolerations": [],
               "mounted_volumes": [],
               "filename": "1_fetch_from_s3.ipynb",
-              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+              "runtime_image": "quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest"
             },
             "ui_data": {
               "label": "Fetch from S3",
@@ -152,7 +152,7 @@
               "kubernetes_tolerations": [],
               "mounted_volumes": [],
               "filename": "2_etl_transform.ipynb",
-              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+              "runtime_image": "quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest"
             },
             "ui_data": {
               "label": "ETL Transform",
@@ -252,7 +252,7 @@
               "kubernetes_tolerations": [],
               "mounted_volumes": [],
               "filename": "3_analyze_and_plot.ipynb",
-              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+              "runtime_image": "quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest"
             },
             "ui_data": {
               "label": "Analyze and Plot",
@@ -345,7 +345,7 @@
               "kubernetes_tolerations": [],
               "mounted_volumes": [],
               "filename": "4_upload_results.ipynb",
-              "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+              "runtime_image": "quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest"
             },
             "ui_data": {
               "label": "Upload Results",
@@ -419,7 +419,7 @@
             "mounted_volumes": [],
             "kubernetes_secrets": [],
             "env_vars": [],
-            "runtime_image": "quay.io/elyra/elyra:3.15.0-py3.10"
+            "runtime_image": "quay.io/opendatahub-contrib/workbench-images:runtime-datascience-c9s-py311_2023c_latest"
           }
         }
       },
